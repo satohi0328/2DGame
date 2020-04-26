@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IbarstScript : MonoBehaviour {
+public class IbarstBlackScript : MonoBehaviour {
 
 	[Header("スピード")] public float speed = 5.0f;
 	[Header("最大移動距離")] public float maxDistance = 100.0f;
@@ -38,8 +38,8 @@ public class IbarstScript : MonoBehaviour {
 
 	private void OnTriggerEnter2D(Collider2D collision) {
 
-        // 攻撃オブジェクト同士で相殺しない
-        if (!(collision.CompareTag("Ibarst") || collision.CompareTag("Player"))) {
+        // 攻撃した本人と、その攻撃オブジェクトは衝突判定しない
+        if (!(collision.CompareTag("Ibarst_Black") || collision.CompareTag("Enemy"))) {
             Instantiate(explosion,transform.position,transform.rotation);
             Destroy(this.gameObject);
         }

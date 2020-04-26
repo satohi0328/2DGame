@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Ground
   - Ibarst
+  - Ibarst_Black
+  - Enemy
   layers:
   - Default
   - TransparentFX

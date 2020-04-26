@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerScript : MonoBehaviour {
 
@@ -15,6 +16,9 @@ public class PlayerScript : MonoBehaviour {
     private float dashTime, jumpTime;
     private float lapseTime = 0.0f; //攻撃後の経過時間
     private bool isAttack = false; // 攻撃したかどうか
+    private float myDirection; //プレイヤーが向いている方向
+    private Slider _slider;
+    private bool gameSetFlg = false; //ゲーム終了フラグ
 
     //パブリック変数
     public float speed; //速度
@@ -28,15 +32,8 @@ public class PlayerScript : MonoBehaviour {
     public AnimationCurve jumpCurve; //
     public GameObject ibarst; // 攻撃オブジェクト
     public float coolTime = 0.5f; //攻撃のクールタイム
+    public int life; //体力
 
-
-
-    //Playerの状態
-    public enum MyState {
-        Idle,
-        Attack,
-        Jum
-    };
 
     // Use this for initialization
     void Start() {
@@ -44,12 +41,26 @@ public class PlayerScript : MonoBehaviour {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
 
+        // スライダーを取得する
+        _slider = GameObject.Find("PlayerLife").GetComponent<Slider>();
+
+        //体力初期化
+        ResetLife();
+
         //lapseTimeを初期化
         lapseTime = 0.0f;
     }
 
     // Update is called once per frame
     void FixedUpdate() {
+
+        //ゲーム終了時は動きを止める
+        if (gameSetFlg) {
+            rb.velocity = new Vector2(0f, 0f);
+            anim.Play("die");
+
+            return;
+        }
         //接地判定
         isGround = ground.IsGround();
 
@@ -61,9 +72,9 @@ public class PlayerScript : MonoBehaviour {
         if (JudgeAttack()) {
             if (Input.GetKey(KeyCode.Space)) {
                 Ibarst();
+                //Ibarst_2();
                 anim.SetTrigger("attack_Trigger");
             }
-
         }
 
         //移動速度を設定
@@ -71,10 +82,14 @@ public class PlayerScript : MonoBehaviour {
 
         //アニメーションを適用
         SetAnimation();
-
     }
 
 
+    // 体力ゲージの初期化
+    private void ResetLife() {
+        _slider.maxValue = life;
+        _slider.value = life;
+    }
     /// <summary>
     /// Y成分で必要な計算をし、速度を返す。
     /// </summary>
@@ -118,15 +133,19 @@ public class PlayerScript : MonoBehaviour {
         float horizontalKey = Input.GetAxis("Horizontal");
         float xSpeed = 0.0f;
 
-        if (horizontalKey > 0) {
+        if (horizontalKey > 0 && this.transform.position.x <= -0.5f) {
             transform.localScale = new Vector3(1, 1, 1);
             dashTime += Time.deltaTime;
             anim.SetBool("is_walk", true);
+            myDirection = 1;
+
             xSpeed = speed;
-        } else if (horizontalKey < 0) {
+        } else if (horizontalKey < 0 && this.transform.position.x >= -8f) {
             transform.localScale = new Vector3(-1, 1, 1);
             dashTime += Time.deltaTime;
             anim.SetBool("is_walk", true);
+            myDirection = -1;
+
             xSpeed = -speed;
         } else {
             anim.SetBool("is_walk", false);
@@ -143,7 +162,7 @@ public class PlayerScript : MonoBehaviour {
 
         beforeKey = horizontalKey;
         xSpeed *= dashCurve.Evaluate(dashTime);
-        beforeKey = horizontalKey;
+
         return xSpeed;
     }
 
@@ -157,9 +176,33 @@ public class PlayerScript : MonoBehaviour {
 
 
     private void Ibarst() {
+        //攻撃アニメーション
+        anim.SetTrigger("attack_Trigger");
+
         // 攻撃オブジェクトを生成
         GameObject g = Instantiate(ibarst);
-        g.transform.position = new Vector2(this.transform.position.x + 1f, transform.position.y - 0.5f);
+        //攻撃オブジェクトの配置
+        g.transform.localScale = new Vector2(g.transform.localScale.x * myDirection, g.transform.localScale.y);
+        g.transform.position = new Vector2(this.transform.position.x + 1f * myDirection, transform.position.y - 0.5f);
+        isAttack = true;
+    }
+
+    private void Ibarst_2() {
+        //攻撃アニメーション
+        anim.SetTrigger("attack_Trigger");
+
+        // 攻撃オブジェクトを生成
+        GameObject g1 = Instantiate(ibarst);
+        GameObject g2 = Instantiate(ibarst);
+        GameObject g3 = Instantiate(ibarst);
+        //攻撃オブジェクトの配置
+        g1.transform.localScale = new Vector2(g1.transform.localScale.x * myDirection, g1.transform.localScale.y);
+        g2.transform.localScale = new Vector2(g2.transform.localScale.x * myDirection, g2.transform.localScale.y);
+        g3.transform.localScale = new Vector2(g3.transform.localScale.x * myDirection, g3.transform.localScale.y);
+        g1.transform.position = new Vector2(this.transform.position.x + 0.2f * myDirection, transform.position.y - 0.2f);
+        g2.transform.position = new Vector2(this.transform.position.x + 1f * myDirection, transform.position.y - 0.5f);
+        g3.transform.position = new Vector2(this.transform.position.x + 0.2f * myDirection, transform.position.y - 0.7f);
+
         isAttack = true;
     }
 
@@ -183,14 +226,14 @@ public class PlayerScript : MonoBehaviour {
         return true;
 
     }
+    private void OnTriggerEnter2D(Collider2D collision) {
+        if (collision.CompareTag("Ibarst_Black")) {
+            life -= 1;
+            _slider.value = life;
 
-    //public void SetState(MyState tempState) {
-    //    if (tempState == MyState.Normal) {
-    //        state = MyState.Normal;
-    //    } else if (tempState == MyState.Attack) {
-    //        velocity = Vector3.zero;
-    //        state = MyState.Attack;
-    //        animator.SetTrigger("Attack");
-    //    }
-    //}
+            if (life == 0) {                
+                gameSetFlg = true;
+            }
+        }
+    }
 }
