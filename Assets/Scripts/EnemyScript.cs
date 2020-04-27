@@ -38,6 +38,7 @@ public class EnemyScript : MonoBehaviour {
     public float coolTime = 0.5f; //攻撃のクールタイム
     public int life; //体力
     public float motionTime; //モーション時間
+    public Text gameSetText; //ゲーム終了Text
 
     //行動パターン
     public enum PATTERN {
@@ -75,7 +76,7 @@ public class EnemyScript : MonoBehaviour {
         if (gameSetFlg) {
             rb.velocity = new Vector2(0f, 0f);
             anim.SetBool("die", true);
-
+            gameSetText.text = "YOU WIN";
             return;
         }
 

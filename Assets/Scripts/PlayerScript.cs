@@ -20,6 +20,13 @@ public class PlayerScript : MonoBehaviour {
     private Slider _slider;
     private bool gameSetFlg = false; //ゲーム終了フラグ
 
+    
+    private bool isLButtonDown = false;//左ボタン押下の判定
+    private bool isRButtonDown = false;//右ボタン押下の判定
+    private bool isUpButtonDown = false;//上ボタン押下の判定
+    private bool isAckButtonDown = false;//攻撃ボタン押下の判定
+
+
     //パブリック変数
     public float speed; //速度
     public float gravity; //重力
@@ -33,6 +40,7 @@ public class PlayerScript : MonoBehaviour {
     public GameObject ibarst; // 攻撃オブジェクト
     public float coolTime = 0.5f; //攻撃のクールタイム
     public int life; //体力
+    public Text gameSetText; //ゲーム終了Text
 
 
     // Use this for initialization
@@ -58,6 +66,7 @@ public class PlayerScript : MonoBehaviour {
         if (gameSetFlg) {
             rb.velocity = new Vector2(0f, 0f);
             anim.Play("die");
+            gameSetText.text = "YOU LOSE";
 
             return;
         }
@@ -70,7 +79,7 @@ public class PlayerScript : MonoBehaviour {
 
         // 攻撃できるか判定
         if (JudgeAttack()) {
-            if (Input.GetKey(KeyCode.Space)) {
+            if (Input.GetKey(KeyCode.Space) || isAckButtonDown == true) {
                 Ibarst();
                 //Ibarst_2();
                 anim.SetTrigger("attack_Trigger");
@@ -99,7 +108,7 @@ public class PlayerScript : MonoBehaviour {
         float ySpeed = -gravity;
 
         if (isGround) {
-            if (verticalKey > 0 && jumpTime < jumpLimitTime) {
+            if ((verticalKey > 0 || isUpButtonDown == true) && jumpTime < jumpLimitTime) {
                 ySpeed = jumpSpeed;
                 jumpPos = transform.position.y; //ジャンプした位置を記録する
                 isJump = true;
@@ -109,7 +118,7 @@ public class PlayerScript : MonoBehaviour {
             }
         } else if (isJump) {
             //上ボタンを押されている。かつ、現在の高さがジャンプした位置から自分の決めた位置より下ならジャンプを継続する
-            if (verticalKey > 0 && jumpPos + jumpHeight > transform.position.y && jumpTime < jumpLimitTime && !isHead) {
+            if ((verticalKey > 0 || isUpButtonDown == true) && jumpPos + jumpHeight > transform.position.y && jumpTime < jumpLimitTime && !isHead) {
                 ySpeed = jumpSpeed;
                 jumpTime += Time.deltaTime;
             } else {
@@ -133,14 +142,16 @@ public class PlayerScript : MonoBehaviour {
         float horizontalKey = Input.GetAxis("Horizontal");
         float xSpeed = 0.0f;
 
-        if (horizontalKey > 0 && this.transform.position.x <= -0.5f) {
+        // (→)右方向の場合
+        if ((horizontalKey > 0 || isRButtonDown == true )&& this.transform.position.x <= -0.5f) {
             transform.localScale = new Vector3(1, 1, 1);
             dashTime += Time.deltaTime;
             anim.SetBool("is_walk", true);
             myDirection = 1;
 
             xSpeed = speed;
-        } else if (horizontalKey < 0 && this.transform.position.x >= -8f) {
+            // (←)左方向の場合
+        } else if ((horizontalKey < 0 || isLButtonDown == true )&& this.transform.position.x >= -8f) {
             transform.localScale = new Vector3(-1, 1, 1);
             dashTime += Time.deltaTime;
             anim.SetBool("is_walk", true);
@@ -235,5 +246,41 @@ public class PlayerScript : MonoBehaviour {
                 gameSetFlg = true;
             }
         }
+    }
+
+
+    //左ボタンを押し続けた場合の処理
+    public void GetMyLeftButtonDown() {
+        this.isLButtonDown = true;
+    }
+    //左ボタンを離した場合の処理
+    public void GetMyLeftButtonUp() {
+        this.isLButtonDown = false;
+    }
+
+    //右ボタンを押し続けた場合の処理
+    public void GetMyRightButtonDown() {
+        this.isRButtonDown = true;
+    }
+    //右ボタンを離した場合の処理
+    public void GetMyRightButtonUp() {
+        this.isRButtonDown = false;
+    }
+    //上ボタンを押し続けた場合の処理
+    public void GetMyUpButtonDown() {
+        this.isUpButtonDown = true;
+    }
+    //上ボタンを離した場合の処理
+    public void GetMyUpButtonUp() {
+        this.isUpButtonDown = false;
+    }
+
+    //攻撃ボタンを押し続けた場合の処理
+    public void GetMyAttackButtonDown() {
+        this.isAckButtonDown = true;
+    }
+    //攻撃ボタンを離した場合の処理
+    public void GetMyAttackButtonUp() {
+        this.isAckButtonDown = false;
     }
 }
