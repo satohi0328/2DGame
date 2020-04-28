@@ -38,6 +38,7 @@ public class PlayerScript : MonoBehaviour {
     public AnimationCurve dashCurve; //
     public AnimationCurve jumpCurve; //
     public GameObject ibarst; // 攻撃オブジェクト
+    public GameObject fire; // 攻撃オブジェクト(強)
     public float coolTime = 0.5f; //攻撃のクールタイム
     public int life; //体力
     public Text gameSetText; //ゲーム終了Text
@@ -66,6 +67,7 @@ public class PlayerScript : MonoBehaviour {
         if (gameSetFlg) {
             rb.velocity = new Vector2(0f, 0f);
             anim.Play("die");
+            Destroy(this.gameObject, 3f);
             gameSetText.text = "YOU LOSE";
 
             return;
@@ -80,8 +82,8 @@ public class PlayerScript : MonoBehaviour {
         // 攻撃できるか判定
         if (JudgeAttack()) {
             if (Input.GetKey(KeyCode.Space) || isAckButtonDown == true) {
-                Ibarst();
-                //Ibarst_2();
+                //Ibarst();
+                Ibarst_2();
                 anim.SetTrigger("attack_Trigger");
             }
         }
@@ -99,10 +101,8 @@ public class PlayerScript : MonoBehaviour {
         _slider.maxValue = life;
         _slider.value = life;
     }
-    /// <summary>
-    /// Y成分で必要な計算をし、速度を返す。
-    /// </summary>
-    /// <returns>Y軸の速さ</returns>
+
+    /// Y軸の動きを取得
     private float GetYSpeed() {
         float verticalKey = Input.GetAxis("Vertical");
         float ySpeed = -gravity;
@@ -134,10 +134,7 @@ public class PlayerScript : MonoBehaviour {
         return ySpeed;
     }
 
-    /// <summary>
-    /// X成分で必要な計算をし、速度を返す。
-    /// </summary>
-    /// <returns>X軸の速さ</returns>
+    /// X軸の動きを取得
     private float GetXSpeed() {
         float horizontalKey = Input.GetAxis("Horizontal");
         float xSpeed = 0.0f;
@@ -145,7 +142,6 @@ public class PlayerScript : MonoBehaviour {
         // (→)右方向の場合
         if ((horizontalKey > 0 || isRButtonDown == true )&& this.transform.position.x <= -0.5f) {
             transform.localScale = new Vector3(1, 1, 1);
-            dashTime += Time.deltaTime;
             anim.SetBool("is_walk", true);
             myDirection = 1;
 
@@ -153,7 +149,6 @@ public class PlayerScript : MonoBehaviour {
             // (←)左方向の場合
         } else if ((horizontalKey < 0 || isLButtonDown == true )&& this.transform.position.x >= -8f) {
             transform.localScale = new Vector3(-1, 1, 1);
-            dashTime += Time.deltaTime;
             anim.SetBool("is_walk", true);
             myDirection = -1;
 
@@ -161,25 +156,13 @@ public class PlayerScript : MonoBehaviour {
         } else {
             anim.SetBool("is_walk", false);
             xSpeed = 0.0f;
-            dashTime = 0.0f;
         }
-
-        //前回の入力からダッシュの反転を判断して速度を変える
-        if (horizontalKey > 0 && beforeKey < 0) {
-            dashTime = 0.0f;
-        } else if (horizontalKey < 0 && beforeKey > 0) {
-            dashTime = 0.0f;
-        }
-
-        beforeKey = horizontalKey;
-        xSpeed *= dashCurve.Evaluate(dashTime);
 
         return xSpeed;
     }
 
-    /// <summary>
-    /// アニメーションを設定する
-    /// </summary>
+
+    // アニメーションを設定
     private void SetAnimation() {
         anim.SetBool("jump", isJump);
     }
@@ -203,9 +186,9 @@ public class PlayerScript : MonoBehaviour {
         anim.SetTrigger("attack_Trigger");
 
         // 攻撃オブジェクトを生成
-        GameObject g1 = Instantiate(ibarst);
-        GameObject g2 = Instantiate(ibarst);
-        GameObject g3 = Instantiate(ibarst);
+        GameObject g1 = Instantiate(fire);
+        GameObject g2 = Instantiate(fire);
+        GameObject g3 = Instantiate(fire);
         //攻撃オブジェクトの配置
         g1.transform.localScale = new Vector2(g1.transform.localScale.x * myDirection, g1.transform.localScale.y);
         g2.transform.localScale = new Vector2(g2.transform.localScale.x * myDirection, g2.transform.localScale.y);
@@ -247,7 +230,6 @@ public class PlayerScript : MonoBehaviour {
             }
         }
     }
-
 
     //左ボタンを押し続けた場合の処理
     public void GetMyLeftButtonDown() {

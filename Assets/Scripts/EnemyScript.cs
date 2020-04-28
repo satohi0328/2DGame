@@ -76,6 +76,7 @@ public class EnemyScript : MonoBehaviour {
         if (gameSetFlg) {
             rb.velocity = new Vector2(0f, 0f);
             anim.SetBool("die", true);
+            Destroy(this.gameObject, 3f);
             gameSetText.text = "YOU WIN";
             return;
         }

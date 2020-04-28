@@ -7,11 +7,11 @@ PlayerSettings:
   productGUID: d9228d38fd57440a4a5047c565b42a96
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
-  defaultScreenOrientation: 4
+  defaultScreenOrientation: 2
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
+  companyName: Satohi
   productName: 2DGame
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -158,7 +158,8 @@ PlayerSettings:
   resolutionScalingMode: 0
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
-  applicationIdentifier: {}
+  applicationIdentifier:
+    iOS: com.Satohi.2DGame
   buildNumber: {}
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 16
