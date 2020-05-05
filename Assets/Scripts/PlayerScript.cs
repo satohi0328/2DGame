@@ -19,7 +19,7 @@ public class PlayerScript : MonoBehaviour {
     private float myDirection; //プレイヤーが向いている方向
     private Slider _slider;
     private bool gameSetFlg = false; //ゲーム終了フラグ
-
+    private AttackScript specialAttack; //スペシャルアタックの変数
     
     private bool isLButtonDown = false;//左ボタン押下の判定
     private bool isRButtonDown = false;//右ボタン押下の判定
@@ -46,9 +46,10 @@ public class PlayerScript : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-        //コンポーネントのインスタンスを捕まえる
+        //コンポーネントのインスタンスを取得
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        specialAttack = GetComponent<AttackScript>();
 
         // スライダーを取得する
         _slider = GameObject.Find("PlayerLife").GetComponent<Slider>();
@@ -82,9 +83,12 @@ public class PlayerScript : MonoBehaviour {
         // 攻撃できるか判定
         if (JudgeAttack()) {
             if (Input.GetKey(KeyCode.Space) || isAckButtonDown == true) {
-                //Ibarst();
-                Ibarst_2();
+                Ibarst();
+                //Ibarst_2();
                 anim.SetTrigger("attack_Trigger");
+            }
+            if (Input.GetKeyDown(KeyCode.E)) {
+                specialAttack.SpecialAttack();
             }
         }
 
@@ -157,7 +161,6 @@ public class PlayerScript : MonoBehaviour {
             anim.SetBool("is_walk", false);
             xSpeed = 0.0f;
         }
-
         return xSpeed;
     }
 
@@ -166,8 +169,6 @@ public class PlayerScript : MonoBehaviour {
     private void SetAnimation() {
         anim.SetBool("jump", isJump);
     }
-
-
 
     private void Ibarst() {
         //攻撃アニメーション
@@ -216,10 +217,9 @@ public class PlayerScript : MonoBehaviour {
                 return true;
             }
         }
-
         return true;
-
     }
+
     private void OnTriggerEnter2D(Collider2D collision) {
         if (collision.CompareTag("Ibarst_Black")) {
             life -= 1;
