@@ -25,11 +25,10 @@ public class GameController : MonoBehaviour {
 
 		// ゲージが溜まった場合
 		if (customSlider.value == customSlider.maxValue) {
-            //ボタンを使えるようにする
-			customButton.enabled = true;
+			customButton.interactable = true; //ボタンを活性
 
-            // Qキーを押された場合(画面上のカスタムボタン押下と同じ)
-            if (Input.GetKeyDown(KeyCode.Q)){
+			// Qキーを押された場合(画面上のカスタムボタン押下と同じ)
+			if (Input.GetKeyDown(KeyCode.Q)){
 				callCutsomPanel();
             }
         }

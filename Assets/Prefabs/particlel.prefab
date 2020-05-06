@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 58259380248740384}
   - component: {fileID: 95694547399845166}
   - component: {fileID: 111427751291684870}
+  - component: {fileID: 114589155555889944}
   m_Layer: 0
   m_Name: particlel
   m_TagString: Ibarst
@@ -58,7 +59,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: -0.1
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -110,6 +111,17 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &114589155555889944
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1064551161627542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b6c4aa8aa28345c9ac20b6d80a4aefd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &212241498326093454
 SpriteRenderer:
   m_ObjectHideFlags: 1

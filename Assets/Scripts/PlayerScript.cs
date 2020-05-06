@@ -16,7 +16,7 @@ public class PlayerScript : MonoBehaviour {
     private float dashTime, jumpTime;
     private float lapseTime = 0.0f; //攻撃後の経過時間
     private bool isAttack = false; // 攻撃したかどうか
-    private float myDirection; //プレイヤーが向いている方向
+    private float myDirection = 1; //プレイヤーが向いている方向
     private Slider _slider;
     private bool gameSetFlg = false; //ゲーム終了フラグ
     private AttackScript specialAttack; //スペシャルアタックの変数
@@ -84,8 +84,6 @@ public class PlayerScript : MonoBehaviour {
         if (JudgeAttack()) {
             if (Input.GetKey(KeyCode.Space) || isAckButtonDown == true) {
                 Ibarst();
-                //Ibarst_2();
-                anim.SetTrigger("attack_Trigger");
             }
             if (Input.GetKeyDown(KeyCode.E)) {
                 specialAttack.SpecialAttack();
@@ -171,8 +169,10 @@ public class PlayerScript : MonoBehaviour {
     }
 
     private void Ibarst() {
+
         //攻撃アニメーション
         anim.SetTrigger("attack_Trigger");
+        Debug.Log("ibarst");
 
         // 攻撃オブジェクトを生成
         GameObject g = Instantiate(ibarst);
